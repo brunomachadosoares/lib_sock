@@ -1,0 +1,84 @@
+###################################
+#
+#  LIB SOCK
+#
+# lib_sock.so - lib_sock.h
+#
+#
+###################################
+
+Principais funções:
+
+ - msg_write;
+ - trace;
+ - start_server_connection;
+ - start_client_connection;
+
+
+## Função start_server_connection ##
+
+Serve para aguardar conexão via socket.
+
+São passados 4 parâmetros:
+1 - Porta para fazer bind;
+2 - Função que será chamada quando o processo receber novos dados;
+3 - Função que será chamada quando o a conexão fechar;
+4 - Função que será chamada quando a conexão for estabelecida;
+
+void start_server_connection(
+    int port,
+    int(*new_data)(struct tcp_conn *conn, char *data, int len),
+    int(*close_sock)(struct tcp_conn *conn),
+    int(*connected)(struct tcp_conn *conn));
+
+
+## Função start_client_connection: ##
+
+Serve para iniciar uma conexão com socket remoto:
+
+São passados 5 parâmetros:
+1 - Endereço IP destino para conexão;
+2 - Porta para tentar conectar;
+3 - Função que será chamada quando o processo receber novos dados;
+4 - Função que será chamada quando o a conexão fechar;
+5 - Função que será chamada quando a conexão for estabelecida;
+
+void start_client_connection(
+    char *remote_address,
+    int remote_port,
+    int(*new_data)(struct tcp_conn *conn, char *data, int len),
+    int(*close_sock)(struct tcp_conn *conn),
+    int(*connected)(struct tcp_conn *conn));
+
+
+
+## Função msg_write: ##
+
+Serve para encaminhar pacotes para conexão:
+
+São passados 3 parâmetros:
+1 - Instancia da conexão;
+2 - Dados a serem enviados;
+3 - Tamanho total dos dados;
+
+int  msg_write(struct tcp_conn *conn, char *data, int len);
+
+Obs.: retorna 0 se ok e diferente de 0 se houver alguma falha ao enviar os dados;
+
+
+## Função trace: ##
+
+Serve para salvar traces em arquivos de log:
+
+Parâmetros iguais ao printf
+
+void trace(char *format, ...);
+
+Obs.: para habilitar o trace, executar a função "activ_trace()";
+
+
+### COMPILAÇÃO ###
+
+A compilação do código utilizando a lib_sock, exige a própria lib_sock (claro) e a glib-2.0.
+Para tanto, compile com:
+[user@localhost ~]$ gcc teste.c -o teste lib_socket.so `pkg-config glib-2.0 --libs --cflags`
